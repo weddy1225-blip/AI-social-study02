@@ -1,9 +1,5 @@
 # 🚀 2077 考古隊：家鄉遺物鑑定挑戰
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-![Grade: 4th Grade](https://img.shields.io/badge/適用對象-國小四年級-blue)
-![Subject: Social Studies](https://img.shields.io/badge/學科-社會科-orange)
-
 這是一款專為國小四年級社會科「家鄉的變遷」單元設計的 AI 互動教學遊戲。玩家將化身為 2077 年的考古隊員，試圖在數位廢墟中修復被 AI 誤解的古物歷史。
 
 ---
