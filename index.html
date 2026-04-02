@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { 
+      background-color: #1a1c1e; 
+      color: #a8ffb5; 
+      font-family: '微軟正黑體', 'PingFang TC', sans-serif; 
+      display: flex; 
+      justify-content: center; 
+      align-items: center; 
+      height: 100vh; 
+      margin: 0; 
+    }
+
+    #game-container { 
+      width: 90%; 
+      max-width: 650px; 
+      border: 3px solid #4ade80; 
+      padding: 40px; 
+      box-shadow: 0 10px 40px rgba(0,0,0,0.6); 
+      border-radius: 20px; 
+      text-align: center; 
+      background-color: #24272a;
+      min-height: 450px;
+    }
+
+    .content-box { 
+      font-size: 24px; 
+      line-height: 1.6; 
+      text-align: left; 
+      margin-bottom: 30px; 
+      font-weight: bold; 
+      color: #e2e8f0; 
+    }
+
+    .warning { color: #ff6b6b; font-weight: 900; }
+
+    .status-header { 
+      font-size: 18px; 
+      color: #94a3b8; 
+      margin-bottom: 25px; 
+      font-weight: bold;
+      border-bottom: 1px solid #444;
+      padding-bottom: 10px;
+    }
+
+    .btn-grid { 
+      display: grid; 
+      grid-template-columns: 1fr 1fr; 
+      gap: 20px; 
+    }
+
+    .action-btn { 
+      background: #4ade80; 
+      color: #1a1c1e; 
+      border: none; 
+      padding: 20px 50px; 
+      cursor: pointer; 
+      font-size: 26px; 
+      font-weight: 900; 
+      border-radius: 15px; 
+      box-shadow: 0 4px 15px rgba(74, 222, 128, 0.3);
+    }
+
+    /* 按鈕停用樣式 */
+    .action-btn:disabled {
+      background: #4b5563;
+      color: #9ca3af;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .option-btn { 
+      background: #334155; 
+      color: #f8fafc; 
+      border: 2px solid #4ade80; 
+      padding: 20px 10px; 
+      cursor: pointer; 
+      font-size: 22px; 
+      font-weight: bold;
+      border-radius: 12px; 
+      transition: all 0.2s;
+    }
+
+    .option-btn:hover { background: #4ade80; color: #1a1c1e; }
+    .hidden { display: none !important; }
+    .ending-title { font-size: 36px; margin-bottom: 30px; color: #fff; font-weight: 900; text-shadow: 0 0 20px #4ade80; }
+    #result-text { font-size: 26px; font-weight: bold; margin-bottom: 30px; color: #fff; }
+  </style>
+</head>
+<body>
+
+<div id="game-container">
+  <div id="intro-screen">
+    <h1 style="color: #4ade80; font-size: 40px; margin-bottom: 20px;">2077 考古隊員登錄</h1>
+    <div class="content-box">
+      嗶——！歡迎回到 2077 年的新台灣。<br>
+      我是你的 AI 助理。現在我們正站在一片廢墟之上，這裡是 50 年前被稱為「家鄉」的地方。<br>
+      我們剛剛挖出了一個生鏽的鐵盒，裡面裝滿了神祕的「古代文明遺物」。<br><br>
+      <span class="warning">警告： 根據未來的數據庫，這盒東西可能含有強大的能量！</span><br>
+      我們的任務是在電力耗盡前，重新定義這些古物的功能。<br>
+      如果你鑑定錯誤，歷史課本將會被徹底改寫成一場災難！
+    </div>
+    <button id="start-btn" class="action-btn" onclick="startGame()" disabled>系統讀取中...</button>
+  </div>
+
+  <div id="game-screen" class="hidden">
+    <div id="status-bar" class="status-header">考古進度：<span id="prog-val">1</span> / 6</div>
+    <div id="question-area">
+      <div id="question-box" class="content-box"></div>
+      <div id="option-area" class="btn-grid"></div>
+    </div>
+    <div id="feedback-area" class="hidden">
+      <div id="result-text"></div>
+      <button class="action-btn" onclick="goToNext()">前往下一個遺物</button>
+    </div>
+  </div>
+
+  <div id="end-screen" class="hidden">
+    <div id="final-content"></div>
+    <button class="option-btn" onclick="location.reload()" style="margin-top: 40px; width: 100%;">重啟考古系統</button>
+  </div>
+</div>
+
+<script>
+  let gameData = [];
+  let currentStep = 0;
+  let score = 0;
+
+  // 網頁載入後立刻呼叫後端取得資料
+  window.onload = function() {
+    google.script.run.withSuccessHandler(data => {
+      gameData = data;
+      const startBtn = document.getElementById('start-btn');
+      startBtn.disabled = false;
+      startBtn.innerText = "開始回答";
+    }).withFailureHandler(err => {
+      alert("系統連線失敗，請重新整理網頁");
+    }).getGameData();
+  };
+
+  function startGame() {
+    // 雙重保險：檢查資料是否存在
+    if (!gameData || gameData.length === 0) {
+      alert("資料同步中，請稍候...");
+      return;
+    }
+    document.getElementById('intro-screen').classList.add('hidden');
+    document.getElementById('game-screen').classList.remove('hidden');
+    renderQuestion();
+  }
+
+  function renderQuestion() {
+    const item = gameData[currentStep];
+    if (!item) return; // 防禦性檢查
+
+    document.getElementById('prog-val').innerText = currentStep + 1;
+    document.getElementById('feedback-area').classList.add('hidden');
+    document.getElementById('question-area').classList.remove('hidden');
+    
+    document.getElementById('question-box').innerHTML = `
+      <span style="color:#4ade80;">[遺物序號：00${currentStep + 1}]</span><br>
+      描述：${item.name}<br><br>
+      <span style="font-size:18px; color:#94a3b8;">掃描提示：${item.hint}</span>
+    `;
+    
+    const area = document.getElementById('option-area');
+    area.innerHTML = '';
+    item.options.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn';
+      btn.innerText = opt;
+      btn.onclick = () => processAnswer(opt);
+      area.appendChild(btn);
+    });
+  }
+
+  function processAnswer(choice) {
+    const item = gameData[currentStep];
+    const isCorrect = (choice === item.correct);
+    const resultDiv = document.getElementById('result-text');
+    
+    document.getElementById('question-area').classList.add('hidden');
+    document.getElementById('feedback-area').classList.remove('hidden');
+
+    if (isCorrect) {
+      score++;
+      resultDiv.innerHTML = `鑑定成功！<br><span style="color:#4ade80;">這確實是古代的「${item.correct}」。</span>`;
+    } else {
+      resultDiv.innerHTML = `<span class="warning">鑑定報告錯誤！</span><br>歷史已扭曲為「${choice}」。<br><span style="font-size:18px; color:#aaa;">正確應為：${item.correct}</span>`;
+    }
+  }
+
+  function goToNext() {
+    currentStep++;
+    if (currentStep < 6) {
+      renderQuestion();
+    } else {
+      showFinalEnding();
+    }
+  }
+
+  function showFinalEnding() {
+    document.getElementById('game-screen').classList.add('hidden');
+    const endScreen = document.getElementById('end-screen');
+    const finalContent = document.getElementById('final-content');
+    endScreen.classList.remove('hidden');
+
+    const percent = Math.round((score / 6) * 100);
+    let title = "";
+    let desc = "";
+
+    if (score === 6) {
+      title = "【結局 A：歷史修正官】";
+      desc = "鑑定任務結束！成功修復率：100%<br><br>你完美的守護了家鄉的記憶，歷史將永遠傳承下去！";
+    } else if (score >= 3) {
+      title = "【結局 B：時空詐欺師】";
+      desc = `鑑定任務結束！成功修復率：${percent}%<br><br>雖然有些歷史被你搞歪了，但你意外成為了 2077 年最受歡迎的科幻探險家！`;
+    } else {
+      title = "【結局 C：文明斷層者】";
+      desc = `鑑定任務結束！<span class="warning">成功修復率：${percent}%</span><br><br>家鄉的記憶徹底消失在時間長河中...我們已經忘記阿公的生活了。`;
+    }
+
+    finalContent.innerHTML = `
+      <div class="ending-title">${title}</div>
+      <div class="content-box" style="text-align:center;">${desc}</div>
+    `;
+  }
+</script>
+</body>
+</html>
