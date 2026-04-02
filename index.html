@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    /* 護眼色調優化：深灰色底，柔和翠綠與米白文字 */
+    /* 護眼大字體視覺設計 */
     body { 
       background-color: #1a1c1e; 
       color: #a8ffb5; 
@@ -30,20 +32,16 @@
       justify-content: center;
     }
 
-    /* 內容區塊：加大加粗 */
     .content-box { 
       font-size: 26px; 
       line-height: 1.6; 
       text-align: left; 
-      margin-bottom: 35px; 
+      margin-bottom: 30px; 
       font-weight: bold; 
       color: #e2e8f0; 
     }
 
-    .warning { 
-      color: #ff6b6b; 
-      font-weight: 900; 
-    }
+    .warning { color: #ff6b6b; font-weight: 900; }
 
     .status-header { 
       font-size: 20px; 
@@ -54,7 +52,6 @@
       padding-bottom: 10px;
     }
 
-    /* 按鈕樣式：適合觸控、字體清晰 */
     .btn-grid { 
       display: grid; 
       grid-template-columns: 1fr 1fr; 
@@ -93,26 +90,20 @@
       transition: all 0.2s;
     }
 
-    .option-btn:hover { 
-      background: #4ade80; 
-      color: #1a1c1e; 
-    }
-
+    .option-btn:hover { background: #4ade80; color: #1a1c1e; }
     .hidden { display: none !important; }
-    
-    .ending-title { 
-      font-size: 38px; 
-      margin-bottom: 30px; 
-      color: #fff; 
-      font-weight: 900;
-      text-shadow: 0 0 20px #4ade80;
-    }
+    .ending-title { font-size: 38px; margin-bottom: 30px; color: #fff; font-weight: 900; text-shadow: 0 0 20px #4ade80; }
+    #result-text { font-size: 28px; font-weight: bold; margin-bottom: 35px; color: #fff; }
 
-    #result-text {
-      font-size: 28px;
-      font-weight: bold;
-      margin-bottom: 35px;
-      color: #fff;
+    /* GitHub/環境錯誤提示樣式 */
+    .env-error {
+      background: #450a0a;
+      border: 1px solid #f87171;
+      color: #fecaca;
+      padding: 15px;
+      border-radius: 10px;
+      font-size: 18px;
+      margin-top: 20px;
     }
   </style>
 </head>
@@ -121,15 +112,14 @@
 <div id="game-container">
   <div id="intro-screen">
     <h1 style="color: #4ade80; font-size: 42px; margin-top: 0;">2077 考古隊員登錄</h1>
-    <div class="content-box">
+    <div id="intro-text" class="content-box">
       嗶——！歡迎回到 2077 年的新台灣。<br>
       我是你的 AI 助理。現在我們正站在一片廢墟之上，這裡是 50 年前被稱為「家鄉」的地方。<br>
       我們剛剛挖出了一個生鏽的鐵盒，裡面裝滿了神祕的古代文明遺物。<br><br>
       <span class="warning">警告： 根據未來的數據庫，這盒東西可能含有強大的能量！</span><br>
-      我們的任務是在電力耗盡前，重新定義這些古物的功能。<br>
-      如果你鑑定錯誤，歷史課本將會被徹底改寫成一場災難！
+      我們的任務是在電力耗盡前，重新定義這些古物的功能。
     </div>
-    <button id="start-btn" class="action-btn" onclick="startGame()" disabled>系統連線中...</button>
+    <button id="start-btn" class="action-btn" onclick="startGame()" disabled>系統讀取中...</button>
   </div>
 
   <div id="game-screen" class="hidden">
@@ -140,7 +130,7 @@
     </div>
     <div id="feedback-area" class="hidden">
       <div id="result-text"></div>
-      <button class="action-btn" onclick="goToNext()">前往下一件遺物</button>
+      <button class="action-btn" onclick="goToNext()">前往下一個遺物</button>
     </div>
   </div>
 
@@ -155,9 +145,10 @@
   let currentStep = 0;
   let score = 0;
 
-  // 確保在 GAS 環境執行，並防範 "google is not defined"
+  // 初始化環境偵測
   window.onload = function() {
     if (typeof google !== 'undefined' && google.script) {
+      // 正常環境：呼叫 GAS 後端
       google.script.run.withSuccessHandler(data => {
         gameData = data;
         const btn = document.getElementById('start-btn');
@@ -165,10 +156,19 @@
         btn.innerText = "開始回答";
       }).getGameData();
     } else {
-      // 提醒使用者必須透過部署網址開啟
+      // 開源環境（GitHub/Local）：顯示提示
       const btn = document.getElementById('start-btn');
-      btn.innerText = "請透過 GAS 網址開啟";
-      console.error("目前環境不支援 google.script API。");
+      btn.innerText = "環境不支援";
+      btn.style.background = "#555";
+      
+      const introText = document.getElementById('intro-text');
+      introText.innerHTML += `
+        <div class="env-error">
+          🛑 偵測到非 Google 雲端環境！<br>
+          本遊戲需要 Google Apps Script 後端支援。<br>
+          請將此專案部署至 GAS 後，使用 .exec 網址開啟。
+        </div>
+      `;
     }
   };
 
@@ -214,7 +214,7 @@
       score++;
       resultDiv.innerHTML = `鑑定成功！<br><span style="color:#4ade80;">這確實是古代的「${item.correct}」。</span>`;
     } else {
-      resultDiv.innerHTML = `<span class="warning">鑑定失敗！</span><br>歷史已扭曲為「${choice}」。<br><span style="font-size:20px; color:#aaa;">正確名稱應為：${item.correct}</span>`;
+      resultDiv.innerHTML = `<span class="warning">鑑定報告錯誤！</span><br>歷史已扭曲為「${choice}」。<br><span style="font-size:20px; color:#aaa;">正確應為：${item.correct}</span>`;
     }
   }
 
@@ -234,8 +234,7 @@
     endScreen.classList.remove('hidden');
 
     const percent = Math.round((score / 6) * 100);
-    let title = "";
-    let desc = "";
+    let title = "", desc = "";
 
     if (score === 6) {
       title = "【結局 A：歷史修正官】";
@@ -248,10 +247,7 @@
       desc = `鑑定任務結束！<span class="warning">成功修復率：${percent}%</span><br><br>家鄉的記憶徹底消失在時間長河中...我們已經忘記阿公的生活了。`;
     }
 
-    finalContent.innerHTML = `
-      <div class="ending-title">${title}</div>
-      <div class="content-box" style="text-align:center;">${desc}</div>
-    `;
+    finalContent.innerHTML = `<div class="ending-title">${title}</div><div class="content-box" style="text-align:center;">${desc}</div>`;
   }
 </script>
 </body>
