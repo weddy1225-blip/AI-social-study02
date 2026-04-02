@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2077 考古隊：家鄉遺物鑑定科</title>
   <style>
-    /* 護眼大字體視覺設計 */
     body { 
       background-color: #1a1c1e; 
       color: #a8ffb5; 
@@ -14,7 +14,6 @@
       align-items: center; 
       height: 100vh; 
       margin: 0; 
-      overflow: hidden;
     }
 
     #game-container { 
@@ -26,14 +25,11 @@
       border-radius: 20px; 
       text-align: center; 
       background-color: #24272a;
-      min-height: 480px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
+      min-height: 450px;
     }
 
     .content-box { 
-      font-size: 26px; 
+      font-size: 24px; 
       line-height: 1.6; 
       text-align: left; 
       margin-bottom: 30px; 
@@ -44,7 +40,7 @@
     .warning { color: #ff6b6b; font-weight: 900; }
 
     .status-header { 
-      font-size: 20px; 
+      font-size: 18px; 
       color: #94a3b8; 
       margin-bottom: 25px; 
       font-weight: bold;
@@ -62,29 +58,21 @@
       background: #4ade80; 
       color: #1a1c1e; 
       border: none; 
-      padding: 22px 50px; 
+      padding: 20px 50px; 
       cursor: pointer; 
-      font-size: 28px; 
+      font-size: 26px; 
       font-weight: 900; 
       border-radius: 15px; 
       box-shadow: 0 4px 15px rgba(74, 222, 128, 0.3);
-      transition: all 0.2s;
-    }
-
-    .action-btn:disabled {
-      background: #4b5563;
-      color: #9ca3af;
-      cursor: not-allowed;
-      box-shadow: none;
     }
 
     .option-btn { 
       background: #334155; 
       color: #f8fafc; 
       border: 2px solid #4ade80; 
-      padding: 22px 10px; 
+      padding: 20px 10px; 
       cursor: pointer; 
-      font-size: 24px; 
+      font-size: 22px; 
       font-weight: bold;
       border-radius: 12px; 
       transition: all 0.2s;
@@ -92,34 +80,24 @@
 
     .option-btn:hover { background: #4ade80; color: #1a1c1e; }
     .hidden { display: none !important; }
-    .ending-title { font-size: 38px; margin-bottom: 30px; color: #fff; font-weight: 900; text-shadow: 0 0 20px #4ade80; }
-    #result-text { font-size: 28px; font-weight: bold; margin-bottom: 35px; color: #fff; }
-
-    /* GitHub/環境錯誤提示樣式 */
-    .env-error {
-      background: #450a0a;
-      border: 1px solid #f87171;
-      color: #fecaca;
-      padding: 15px;
-      border-radius: 10px;
-      font-size: 18px;
-      margin-top: 20px;
-    }
+    .ending-title { font-size: 36px; margin-bottom: 30px; color: #fff; font-weight: 900; text-shadow: 0 0 20px #4ade80; }
+    #result-text { font-size: 26px; font-weight: bold; margin-bottom: 30px; color: #fff; }
   </style>
 </head>
 <body>
 
 <div id="game-container">
   <div id="intro-screen">
-    <h1 style="color: #4ade80; font-size: 42px; margin-top: 0;">2077 考古隊員登錄</h1>
-    <div id="intro-text" class="content-box">
+    <h1 style="color: #4ade80; font-size: 40px; margin-bottom: 20px;">2077 考古隊員登錄</h1>
+    <div class="content-box">
       嗶——！歡迎回到 2077 年的新台灣。<br>
       我是你的 AI 助理。現在我們正站在一片廢墟之上，這裡是 50 年前被稱為「家鄉」的地方。<br>
-      我們剛剛挖出了一個生鏽的鐵盒，裡面裝滿了神祕的古代文明遺物。<br><br>
+      我們剛剛挖出了一個生鏽的鐵盒，裡面裝滿了神祕的「古代文明遺物」。<br><br>
       <span class="warning">警告： 根據未來的數據庫，這盒東西可能含有強大的能量！</span><br>
-      我們的任務是在電力耗盡前，重新定義這些古物的功能。
+      我們的任務是在電力耗盡前，重新定義這些古物的功能。<br>
+      如果你鑑定錯誤，歷史課本將會被徹底改寫成一場災難！
     </div>
-    <button id="start-btn" class="action-btn" onclick="startGame()" disabled>系統讀取中...</button>
+    <button id="start-btn" class="action-btn" onclick="startGame()">開始回答</button>
   </div>
 
   <div id="game-screen" class="hidden">
@@ -141,39 +119,73 @@
 </div>
 
 <script>
+  // 1. 直接將題庫整合進前端
+  const allArtifacts = [
+    { name: "黑盒子有 0-9 圓圈，連著放耳朵的長條物", correct: "撥盤式電話", hint: "以前沒螢幕時的通訊工具" },
+    { name: "彩色塑膠卡片印著 100 元，要插進公用機器", correct: "電話卡", hint: "打公用電話必備的卡片" },
+    { name: "木頭板子中間挖了烏龜形狀的洞，有漂亮刻紋", correct: "紅龜粿模具", hint: "做傳統紅色烏龜點心的工具" },
+    { name: "透明方塊盒子，裡面捲著兩圈黑色細磁帶", correct: "錄音帶", hint: "以前用來錄音或聽歌的匣子" },
+    { name: "巨大圓形石盤，中間有洞，轉動會磨出豆漿", correct: "石磨", hint: "古代用來磨豆子或米的機器" },
+    { name: "紅、藍、綠三色橫條紋的塑膠提袋", correct: "茄芷袋", hint: "台灣最有名的傳統購物袋" },
+    { name: "厚厚的紙本大書，裡面印滿了全台灣人的號碼", correct: "電話簿", hint: "以前找人電話要翻這本" },
+    { name: "鐵製重物，燒熱後用來把衣服壓得平整", correct: "熨斗", hint: "讓衣服不皺的小幫手" },
+    { name: "圓形小鐵片，邊緣有鋸齒，小孩在地上彈射", correct: "尪仔標", hint: "以前最流行的紙牌對戰遊戲" },
+    { name: "竹子編成的遮陽帽，農夫下田時必帶", correct: "斗笠", hint: "用竹葉編成的遮陽擋雨帽" },
+    { name: "腰帶上的小盒子，會嗶嗶叫並顯示數字", correct: "BB Call", hint: "手機流行前的隨身聯絡器" },
+    { name: "手動旋轉的機器，把米放入會蹦出巨大響聲", correct: "爆米香機", hint: "製作傳統米點心的壓力機" },
+    { name: "灰色的遊戲機，要插大卡帶才能玩瑪利歐", correct: "紅白機", hint: "阿公年代最紅的電視遊戲機" },
+    { name: "彩色玻璃小珠子，古代小孩在地上彈來彈去", correct: "彈珠", hint: "圓圓的、亮亮的玻璃玩具" },
+    { name: "鐵皮做的漏斗燈，要裝油點火，以前沒電時用", correct: "煤油燈", hint: "早期用來照明的燈具" },
+    { name: "木頭做的長板，以前廟口或家門口乘涼坐的", correct: "長板凳", hint: "可以坐很多人的長型椅子" },
+    { name: "腳踏式木頭機器，轉動會把稻穀的殼吹掉", correct: "風選機", hint: "農夫用來分離穀殼的工具" },
+    { name: "抓魚用的竹編籠子，放在河裡魚就進不去了", correct: "魚筌", hint: "竹子編成的陷阱式抓魚工具" },
+    { name: "寫著地名的小紙片，以前搭火車要剪洞進站", correct: "火車票", hint: "乘車必備的紙質憑證" },
+    { name: "長得像漏斗的鐵皮便當盒，有三四層高", correct: "鐵便當盒", hint: "以前學生帶午餐用的容器" },
+    { name: "陶瓷做的碗，上面印有紅色的公雞圖案", correct: "公雞碗", hint: "阿公阿嬤家常見的古早餐具" },
+    { name: "彎彎的像月亮，以前農夫用來收割稻米", correct: "鐮刀", hint: "割稻或除草用的利器" },
+    { name: "像骰子一樣的方塊，要用手轉動對齊顏色", correct: "魔術方塊", hint: "訓練邏輯的手部益智玩具" },
+    { name: "手動轉動手把，就會削出細細長長的鉛筆屑", correct: "削鉛筆機", hint: "以前寫作業前必用的工具" },
+    { name: "綠色外殼，中間一個開關，煮飯超好用", correct: "電鍋", hint: "台灣人家裡都有的煮飯神器" },
+    { name: "竹子編的圓形大盤子，用來曬乾香菇或菜脯", correct: "竹篩", hint: "曬乾東西的好幫手" },
+    { name: "只有一個輪子的手推車，在農田運土或菜", correct: "單輪車", hint: "搬運重物的人力小車" },
+    { name: "以前阿嬤用的針線盒，木頭做的有很多小格", correct: "針線盒", hint: "收納縫紉工具的箱子" },
+    { name: "用羽毛和橡皮做的，小孩用腳踢不讓它掉地", correct: "毽子", hint: "古代人的足球，用腳踢的" },
+    { name: "鐵皮做的青蛙，轉動發條後會在地上跳動", correct: "鐵皮玩具", hint: "不用電池就會動的金屬玩具" }
+  ];
+
   let gameData = [];
   let currentStep = 0;
   let score = 0;
 
-  // 初始化環境偵測
+  // 2. 初始化遊戲資料（取代原本的後端呼叫）
+  function initGame() {
+    // 隨機打亂並選取 6 題
+    const shuffled = [...allArtifacts].sort(() => Math.random() - 0.5);
+    const selected = shuffled.slice(0, 6);
+    
+    gameData = selected.map(q => {
+      // 為每題隨機生成 4 個選項
+      let options = [q.correct];
+      while (options.length < 4) {
+        let randomItem = allArtifacts[Math.floor(Math.random() * allArtifacts.length)].correct;
+        if (!options.includes(randomItem)) options.push(randomItem);
+      }
+      return {
+        ...q,
+        options: options.sort(() => Math.random() - 0.5)
+      };
+    });
+  }
+
   window.onload = function() {
-    if (typeof google !== 'undefined' && google.script) {
-      // 正常環境：呼叫 GAS 後端
-      google.script.run.withSuccessHandler(data => {
-        gameData = data;
-        const btn = document.getElementById('start-btn');
-        btn.disabled = false;
-        btn.innerText = "開始回答";
-      }).getGameData();
-    } else {
-      // 開源環境（GitHub/Local）：顯示提示
-      const btn = document.getElementById('start-btn');
-      btn.innerText = "環境不支援";
-      btn.style.background = "#555";
-      
-      const introText = document.getElementById('intro-text');
-      introText.innerHTML += `
-        <div class="env-error">
-          🛑 偵測到非 Google 雲端環境！<br>
-          本遊戲需要 Google Apps Script 後端支援。<br>
-          請將此專案部署至 GAS 後，使用 .exec 網址開啟。
-        </div>
-      `;
-    }
+    initGame();
+    // 立即啟用按鈕
+    const startBtn = document.getElementById('start-btn');
+    startBtn.disabled = false;
+    startBtn.innerText = "開始回答";
   };
 
   function startGame() {
-    if (gameData.length === 0) return;
     document.getElementById('intro-screen').classList.add('hidden');
     document.getElementById('game-screen').classList.remove('hidden');
     renderQuestion();
@@ -188,7 +200,7 @@
     document.getElementById('question-box').innerHTML = `
       <span style="color:#4ade80;">[遺物序號：00${currentStep + 1}]</span><br>
       描述：${item.name}<br><br>
-      <span style="font-size:20px; color:#94a3b8;">掃描提示：${item.hint}</span>
+      <span style="font-size:18px; color:#94a3b8;">掃描提示：${item.hint}</span>
     `;
     
     const area = document.getElementById('option-area');
@@ -214,7 +226,7 @@
       score++;
       resultDiv.innerHTML = `鑑定成功！<br><span style="color:#4ade80;">這確實是古代的「${item.correct}」。</span>`;
     } else {
-      resultDiv.innerHTML = `<span class="warning">鑑定報告錯誤！</span><br>歷史已扭曲為「${choice}」。<br><span style="font-size:20px; color:#aaa;">正確應為：${item.correct}</span>`;
+      resultDiv.innerHTML = `<span class="warning">鑑定報告錯誤！</span><br>歷史已扭曲為「${choice}」。<br><span style="font-size:18px; color:#aaa;">正確應為：${item.correct}</span>`;
     }
   }
 
@@ -234,7 +246,8 @@
     endScreen.classList.remove('hidden');
 
     const percent = Math.round((score / 6) * 100);
-    let title = "", desc = "";
+    let title = "";
+    let desc = "";
 
     if (score === 6) {
       title = "【結局 A：歷史修正官】";
@@ -247,7 +260,10 @@
       desc = `鑑定任務結束！<span class="warning">成功修復率：${percent}%</span><br><br>家鄉的記憶徹底消失在時間長河中...我們已經忘記阿公的生活了。`;
     }
 
-    finalContent.innerHTML = `<div class="ending-title">${title}</div><div class="content-box" style="text-align:center;">${desc}</div>`;
+    finalContent.innerHTML = `
+      <div class="ending-title">${title}</div>
+      <div class="content-box" style="text-align:center;">${desc}</div>
+    `;
   }
 </script>
 </body>
