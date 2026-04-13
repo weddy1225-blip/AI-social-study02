@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>2077 考古隊：家鄉遺物鑑定挑戰</title>
   <style>
-    /* 核心視覺設計 */
     body { 
       background-color: #1a1c1e; 
       color: #a8ffb5; 
@@ -17,7 +16,6 @@
       margin: 0; 
       overflow: hidden;
     }
-
     #game-container { 
       width: 90%; 
       max-width: 650px; 
@@ -32,18 +30,15 @@
       flex-direction: column;
       justify-content: center;
     }
-
     .content-box { 
-      font-size: 24px; 
+      font-size: 22px; 
       line-height: 1.6; 
       text-align: left; 
       margin-bottom: 30px; 
       font-weight: bold; 
       color: #e2e8f0; 
     }
-
     .warning { color: #ff6b6b; font-weight: 900; }
-
     .status-header { 
       font-size: 18px; 
       color: #94a3b8; 
@@ -52,40 +47,35 @@
       border-bottom: 1px solid #444;
       padding-bottom: 10px;
     }
-
     .btn-grid { 
       display: grid; 
       grid-template-columns: 1fr 1fr; 
-      gap: 20px; 
+      gap: 15px; 
     }
-
     .action-btn { 
       background: #4ade80; 
       color: #1a1c1e; 
       border: none; 
-      padding: 20px 50px; 
+      padding: 15px 40px; 
       cursor: pointer; 
-      font-size: 26px; 
+      font-size: 24px; 
       font-weight: 900; 
       border-radius: 15px; 
       box-shadow: 0 4px 15px rgba(74, 222, 128, 0.3);
       transition: transform 0.2s;
     }
-
     .action-btn:hover { transform: scale(1.05); }
-
     .option-btn { 
       background: #334155; 
       color: #f8fafc; 
       border: 2px solid #4ade80; 
-      padding: 20px 10px; 
+      padding: 15px 10px; 
       cursor: pointer; 
-      font-size: 22px; 
+      font-size: 18px; 
       font-weight: bold;
       border-radius: 12px; 
       transition: all 0.2s;
     }
-
     .option-btn:hover { background: #4ade80; color: #1a1c1e; }
     .hidden { display: none !important; }
     .ending-title { font-size: 36px; margin-bottom: 30px; color: #fff; font-weight: 900; text-shadow: 0 0 20px #4ade80; }
@@ -99,9 +89,9 @@
     <h1 style="color: #4ade80; font-size: 40px; margin-top: 0;">2077 考古隊員登錄</h1>
     <div class="content-box">
       嗶——！歡迎回到 2077 年的新台灣。<br>
-      我是你的 AI 助理。現在我們正站在一片廢墟之上，這裡是 50 年前被稱為「家鄉」的地方。<br><br>
+      資料庫已擴充至 100 件古物。我們正站在廢墟之上，尋找被遺忘的家鄉記憶。<br><br>
       <span class="warning">任務： 在電力耗盡前，鑑定出古物的功能。</span><br>
-      如果你鑑定錯誤，歷史將會被徹底扭曲！
+      隨機抽取 6 件遺物，若鑑定錯誤，歷史將會被徹底扭曲！
     </div>
     <button id="start-btn" class="action-btn" onclick="startGame()">開始鑑定</button>
   </div>
@@ -125,7 +115,6 @@
 </div>
 
 <script>
-  // 核心題庫：直接整合在前端，確保 GitHub 環境可跑
   const allArtifacts = [
     { name: "黑盒子有 0-9 圓圈，連著放耳朵的長條物", correct: "撥盤式電話", hint: "以前沒螢幕時的通訊工具" },
     { name: "彩色塑膠卡片印著 100 元，要插進公用機器", correct: "電話卡", hint: "打公用電話必備的卡片" },
@@ -136,20 +125,111 @@
     { name: "厚厚的紙本大書，裡面印滿了全台灣人的號碼", correct: "電話簿", hint: "以前找人電話要翻這本" },
     { name: "鐵製重物，燒熱後用來把衣服壓得平整", correct: "熨斗", hint: "讓衣服不皺的小幫手" },
     { name: "圓形小鐵片，邊緣有鋸齒，小孩在地上彈射", correct: "尪仔標", hint: "以前流行的紙牌對戰遊戲" },
-    { name: "竹子編成的遮陽帽，農夫下田時必帶", correct: "斗笠", hint: "用竹葉編成的遮陽擋雨帽" }
+    { name: "竹子編成的遮陽帽，農夫下田時必帶", correct: "斗笠", hint: "用竹葉編成的遮陽擋雨帽" },
+    { name: "綠色外殼，上面有一個撥桿，開關會跳起來的煮飯鍋", correct: "大同電鍋", hint: "台灣人家裡幾乎都有一台" },
+    { name: "裝在木框裡的算珠，用手指撥動來計算數字", correct: "算盤", hint: "電子計算機流行前的工具" },
+    { name: "會旋轉的鐵網蓋著葉片，夏天會發出嗡嗡聲", correct: "電風扇", hint: "早期笨重但耐用的降溫設備" },
+    { name: "長方形黑色塑膠塊，要塞進機器裡才能看電影", correct: "錄影帶", hint: "DVD 流行前的影音載體" },
+    { name: "有著長長天線、很大的手持黑色通訊器", correct: "黑金剛手機", hint: "早期大哥大，非常沉重" },
+    { name: "放在腰間會發出嗶嗶聲，顯示號碼的小盒子", correct: "B.B.Call", hint: "手機普及前的個人通訊器" },
+    { name: "銀色金屬蓋子，透明玻璃瓶身，裡面裝熱水", correct: "熱水瓶", hint: "早期家庭保溫熱水的容器" },
+    { name: "像陀螺但中間凹進去，用一根棍子和線扯動", correct: "扯鈴", hint: "民俗體育表演常見的道具" },
+    { name: "塑膠製長條管子，對著裡面吹氣會發出聲音", correct: "直笛", hint: "每個人國小音樂課的必備樂器" },
+    { name: "木頭柄連接著圓形鐵環，在地上滾動前進", correct: "滾鐵環", hint: "早期農村小孩的體能遊戲" },
+    { name: "手搖把手後會削下雪花般的冰塊", correct: "手搖刨冰機", hint: "夏日清涼甜品的製作工具" },
+    { name: "透明玻璃瓶，裡面有一顆彈珠塞住瓶口", correct: "彈珠汽水", hint: "喝完可以把彈珠拿出來玩的飲料" },
+    { name: "鋁製圓形盒子，層層疊起，用來裝午餐", correct: "鋁製便當盒", hint: "放在蒸飯箱裡加熱的容器" },
+    { name: "白色陶瓷杯上有紅色花紋和「囍」字", correct: "囍字對杯", hint: "長輩結婚時常見的紀念品" },
+    { name: "細長竹籤串著一顆紅色透明的硬糖球", correct: "糖葫蘆", hint: "傳統夜市常見的甜點" },
+    { name: "透明塑膠袋裝著像枕頭一樣的五香口味餅乾", correct: "乖乖", hint: "機器乖乖運作必放的守護神" },
+    { name: "橘色圓形塑膠桶，家裡停水時用來儲水", correct: "萬能桶", hint: "台灣家庭常見的各種用途桶子" },
+    { name: "一根金屬針在旋轉的黑盤子上滑動發聲", correct: "黑膠唱片機", hint: "復古的音樂播放設備" },
+    { name: "印有日期與節氣，每天要撕一張掉的厚紙本", correct: "日曆", hint: "掛在牆壁上提醒時間的紙本" },
+    { name: "圓筒狀的鐵盒，以前用來裝底片用的", correct: "底片筒", hint: "現在多用來裝小雜物或零錢" },
+    { name: "木頭製的大箱子，有拉門，打開才能看畫面", correct: "拉門電視機", hint: "早期電視像是一件高級家具" },
+    { name: "像大餅一樣，兩片圓形薄鐵片夾著黑線", correct: "溜溜球", hint: "曾在台灣捲起熱潮的技巧玩具" },
+    { name: "黃色封面的厚書，裡面全是商家地址分類", correct: "工商黃頁", hint: "沒有 Google 前的商家搜尋工具" },
+    { name: "後面有一個超大鐵架，載重能力驚人的腳踏車", correct: "武車", hint: "阿公年代載貨用的鋼鐵坐騎" },
+    { name: "印有國旗或是卡通人物的塑膠小手錶", correct: "電子錶", hint: "早期小朋友獎勵的熱門首選" },
+    { name: "綠色布質背袋，上面印著校名", correct: "帆布書包", hint: "那些年我們背過的青春" },
+    { name: "鐵盒裝著的香脂，蚊蟲叮咬時會塗在皮膚上", correct: "萬金油", hint: "家喻戶曉的提神止癢良藥" },
+    { name: "像陀螺一樣旋轉，但頂端裝有羽毛", correct: "毽子", hint: "用腳踢動的童玩" },
+    { name: "透明長管內裝滿肥皂水，吹出來會有很多圓球", correct: "吹泡泡", hint: "公園裡常見的童年樂趣" },
+    { name: "彩色的小玻璃球，在地上挖洞互相撞擊", correct: "玻璃彈珠", hint: "最古老的競技類童玩" },
+    { name: "黑色底盤上面有透明塑膠罩，轉動指標秤重", correct: "體重計", hint: "沒有數字螢幕的機械式磅秤" },
+    { name: "白鐵製作的長形水壺，當兵時背著", correct: "軍用水壺", hint: "耐摔但喝起來有金屬味" },
+    { name: "藍色塑膠蓋，裡面裝著白色粉末，洗澡後塗抹", correct: "爽身粉", hint: "讓皮膚乾爽不再長痱子的法寶" },
+    { name: "一根竹籤撐著兩片塑膠葉，搓動後會飛上天", correct: "竹蜻蜓", hint: "飛翔夢想的啟蒙童玩" },
+    { name: "長條狀的肥皂，有一股濃濃的茶籽味", correct: "水晶肥皂", hint: "早期洗衣服最乾淨的皂塊" },
+    { name: "藍色瓶身噴霧，噴了會冰冰涼涼", correct: "肌樂", hint: "運動痠痛或蚊蟲叮咬的急救神藥" },
+    { name: "塑膠製的紅色小槌子，打下去會發出嗶聲", correct: "充氣槌子", hint: "夜市遊戲常見的勝利獎勵" },
+    { name: "黑色的軟質圓盤，以前存電腦資料用的", correct: "磁碟片", hint: "現在電腦上儲存圖示的由來" },
+    { name: "大箱子裡面裝滿乾冰，賣冰淇淋的小販推著", correct: "叭噗車", hint: "聽到清脆喇叭聲就知道冰來了" },
+    { name: "厚重的手提機器，可以放錄音帶也能聽廣播", correct: "手提音響", hint: "早期街舞少年肩上的重裝設備" },
+    { name: "木頭架子撐起一塊布，睡覺時防蚊子", correct: "蚊帳", hint: "夏季安穩睡眠的守護結界" },
+    { name: "金屬製、一格一格的，以前用來凍水塊", correct: "製冰盒", hint: "大同電鍋冰櫥裡常見的格狀板" },
+    { name: "彩色的小紙袋，裡面裝著可以吹出泡泡的膠", correct: "吹泡泡膠", hint: "有一股濃濃塑膠味的吹氣玩具" },
+    { name: "一格一格的厚紙片，以前玩抽獎遊戲用的", correct: "戳戳樂", hint: "過年或校慶最受歡迎的驚喜盒" },
+    { name: "木製把手，前面是彩色羽毛，用來除塵", correct: "雞毛撢子", hint: "除塵工具，也是長輩的教子神器" },
+    { name: "圓形的木頭桌子，下面有圓盤可以轉動", correct: "圓桌旋轉台", hint: "辦桌吃團圓飯時最方便的設計" },
+    { name: "長方形的紙，印著漂亮的圖案，大家愛收集", correct: "郵票", hint: "網路發達前，書信往來必貼的憑證" },
+    { name: "像槍一樣的造型，扣動扳機後會發出火花", correct: "火花槍", hint: "沒有危險性但視覺刺激的玩具" },
+    { name: "木製把手配上黑色橡膠，壓下去會有字印在紙上", correct: "印章", hint: "在公文或聯絡簿上留下記號" },
+    { name: "手搖轉動齒輪，將鐵罐蓋子切開的工具", correct: "開罐器", hint: "打開午餐肉或鮪魚罐頭的必備品" },
+    { name: "印有花團錦簇圖案的紅色厚重棉被", correct: "阿嬤花被", hint: "台灣家中最溫暖的集體記憶" },
+    { name: "透明塑膠片上印著九九乘法表", correct: "墊板", hint: "考試前最想偷看的文具" },
+    { name: "裝在腳踏車輪胎旁邊，轉動就會發光的燈", correct: "磨電燈", hint: "不靠電池，靠踩動發電的單車燈" },
+    { name: "金屬製的小青蛙，按壓尾部會往前跳", correct: "發條青蛙", hint: "經典的機械式發條玩具" },
+    { name: "像紙但薄如蟬翼，以前用來練毛筆字", correct: "宣紙", hint: "練習書法與國畫的傳統耗材" },
+    { name: "手持的小型收音機，老人家常放在口袋聽", correct: "隨身聽", hint: "以前掌握新聞與氣象的管道" },
+    { name: "彩色線條繞成的彈簧，可以像下樓梯一樣走路", correct: "彩虹圈", hint: "讓人百玩不膩的動力物理玩具" },
+    { name: "塑膠製的黃色球棒與球，重量很輕", correct: "軟式棒球組", hint: "巷口棒球賽的標準裝備" },
+    { name: "黑色長形像梳子但齒很細，梳掉頭上的蟲", correct: "蝨篦", hint: "以前用來對付頭蝨的細齒梳" },
+    { name: "裝在紙盒裡的兩根紅蠟燭，過年拜拜用", correct: "龍鳳蠟燭", hint: "儀式感滿滿的古早味祭祀品" },
+    { name: "三角形的小紙片，摺疊起來可以寫密語", correct: "交換日記摺紙", hint: "學生時代傳紙條的特殊造型" },
+    { name: "木製圓盤，上面有格子放各種乾果零食", correct: "糖果盤", hint: "過年時客廳桌上必備" },
+    { name: "可以放在手心的黃色塑膠鴨，洗澡會浮起來", correct: "黃色小鴨", hint: "陪伴無數小孩洗澡的好夥伴" },
+    { name: "竹編的圓盤，以前用來曬菜乾或中藥", correct: "笳籬", hint: "阿嬤家屋頂常見的曬物工具" },
+    { name: "裝著透明藍色墨水的筆，筆尖有個小鋼珠", correct: "原子筆", hint: "人類文明記錄最普及的書寫工具" },
+    { name: "像小船一樣的木頭，織布機上穿梭引線", correct: "梭子", hint: "手工織布時代的核心零件" },
+    { name: "銀色鐵罐裝著，噴出來是白色泡沫的刮鬍劑", correct: "刮鬍膏", hint: "長輩早晨修容時的氣味記憶" },
+    { name: "手持的小電扇，前面是軟軟的塑膠葉片", correct: "掌上小電扇", hint: "隨身風扇流行前的解暑小物" },
+    { name: "塑膠製的透明長尺，裡面有流水和亮片", correct: "亮片水尺", hint: "女生同學最愛炫耀的文具之一" },
+    { name: "兩片透明塑膠片夾著乾花，書本裡的標記", correct: "書籤", hint: "以前手工課常見的成品" },
+    { name: "紅色小盒子，插進插頭會發出超音波驅趕生物", correct: "驅蚊器", hint: "早期流行的科技防蚊工具" },
+    { name: "木頭雕刻成的劍，小孩模仿大俠用的道具", correct: "木劍", hint: "武俠影視流行的年代童玩" },
+    { name: "彩色紙張摺疊成的飛機", correct: "紙飛機", hint: "教室後排最常見的飛行器" },
+    { name: "白色棉質手套，勞作或騎機車時常戴", correct: "粗棉手套", hint: "台灣基層勞工的雙手防護" },
+    { name: "銀色圓形大蓋子，家裡辦桌時用來蓋住剩菜", correct: "防蠅罩", hint: "保護食物不被蒼蠅偷吃的網子" },
+    { name: "木頭柄底部有像碗一樣的橡膠，疏通水管用", correct: "吸把", hint: "馬桶堵塞時的救星" },
+    { name: "白色的固體塊，摩擦紙張可以擦掉筆跡", correct: "橡皮擦", hint: "寫錯字時的救命恩人" },
+    { name: "細長的木棍，頂端有火藥，摩擦會起火", correct: "火柴", hint: "打火機普及前的點火工具" },
+    { name: "鐵製的圓環，掛滿各種鑰匙", correct: "鑰匙圈", hint: "管理門禁與機車鑰匙的載具" },
+    { name: "塑膠薄片，墊在碗盤下面防止燙壞桌面", correct: "隔熱墊", hint: "餐桌上的防護層" },
+    { name: "長條木片刻有刻度，用來量長度", correct: "木尺", hint: "裁縫師傅常用的測量工具" },
+    { name: "玻璃罩內有一條金屬絲，通電會發黃光", correct: "鎢絲燈泡", hint: "早期街道與家中的主要照明" },
+    { name: "金屬製的細長針，末端有圓球，用來固定布料", correct: "大頭針", hint: "縫紉或佈告欄常見的固定具" },
+    { name: "印有花紋的薄紙，用來包裹昂貴的水果", correct: "水果包裝紙", hint: "早期送禮高級感的象徵" },
+    { name: "長方形的軟布，中間塞滿棉花，睡覺墊頭", correct: "枕頭", hint: "每日舒眠的必需品" },
+    { name: "一根竹籤撐著半圓形紙片，搖動會有風", correct: "紙扇", hint: "古早味的手動降溫設備" },
+    { name: "塑膠製成的長管，口對口可以講話", correct: "傳聲筒", hint: "簡易的聲學物理玩具" },
+    { name: "鐵製的長夾，用來夾取發燙的煤炭", correct: "火鉗", hint: "廚房灶爐邊的必備工具" },
+    { name: "手搖轉動的鐵箱，裡面會掉出有編號的球", correct: "抽獎機", hint: "尾牙或市集常見的博弈工具" },
+    { name: "彩色玻璃紙包裹的橢圓形硬糖", correct: "黃金糖", hint: "柑仔店最經典的透明糖果" }
   ];
 
   let gameData = [];
   let currentStep = 0;
   let score = 0;
 
-  // 初始化遊戲，從題庫隨機抽出 6 題
   function initGame() {
+    // 從 100 題中隨機抽取 6 題
     const shuffled = [...allArtifacts].sort(() => Math.random() - 0.5);
     const selected = shuffled.slice(0, 6);
     
     gameData = selected.map(q => {
       let options = [q.correct];
+      // 隨機選取 3 個錯誤答案（不與正確答案重複）
       while (options.length < 4) {
         let rand = allArtifacts[Math.floor(Math.random() * allArtifacts.length)].correct;
         if (!options.includes(rand)) options.push(rand);
@@ -161,6 +241,7 @@
     });
   }
 
+  // 確保頁面載入時初始化
   window.onload = initGame;
 
   function startGame() {
@@ -176,7 +257,7 @@
     document.getElementById('question-area').classList.remove('hidden');
     
     document.getElementById('question-box').innerHTML = `
-      <span style="color:#4ade80;">[遺物序號：00${currentStep + 1}]</span><br>
+      <span style="color:#4ade80;">[遺物序號：0${currentStep + 1}]</span><br>
       描述：${item.name}<br><br>
       <span style="font-size:18px; color:#94a3b8;">掃描提示：${item.hint}</span>
     `;
